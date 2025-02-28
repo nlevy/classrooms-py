@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Name Example",
+        "school": "School Example",
+        "gender": "MALE",
+        "academicPerformance": "HIGH",
+        "behavioralPerformance": "MEDIUM",
+        "comments": "optional comments",
+        "friend1": "First friend name",
+        "friend2": "Second friend name",
+        "friend3": "Third friend name",
+        "friend4": "Fourth friend name",
+        "notWith": "Student not to be with",
+        "clusterId": 0
+    }
+]
