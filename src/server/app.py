@@ -13,15 +13,6 @@ app = Flask(__name__)
 CORS(app)
 logging.basicConfig(level=logging.DEBUG)
 
-# Load template at startup
-try:
-    template_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'template.json')
-    with open(template_path, 'r') as f:
-        TEMPLATE = json.load(f)
-except Exception as e:
-    logging.error(f"Failed to load template at startup: {str(e)}")
-    TEMPLATE = None
-
 def create_dataframe(students: List[StudentDto]) -> pd.DataFrame:
     students_data = []
     for student in students:
@@ -74,9 +65,19 @@ def assign_classrooms():
 
 @app.route('/template', methods=['GET'])
 def get_template():
-    if TEMPLATE is None:
+    language = request.args.get('lang')
+    template_name = f'template-{language}.json' if language else 'template-en.json'
+    try:
+        template_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', template_name)
+        with open(template_path, 'r') as f:
+            template = json.load(f)
+            return jsonify(template), 200, {'Content-Type': 'application/json'}
+    except FileNotFoundError:
+        return jsonify({"error": f"Unsupported Language: {language}"}), 500
+    except Exception as e:
+        logging.error(f"Failed to load template: {str(e)}")
         return jsonify({"error": "Template not available"}), 500
-    return jsonify(TEMPLATE), 200, {'Content-Type': 'application/json'}
+
 
 if __name__ == '__main__':
     app.run(debug=True) 
