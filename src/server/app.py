@@ -8,6 +8,7 @@ import os
 from .dto import StudentDto
 from src.service.class_assignment_service import ClassAssignmentService
 from src.service.summary_service import generate_class_summaries
+from src.service.validators.input_validator import InputValidationError
 
 app = Flask(__name__)
 CORS(app)
@@ -49,15 +50,22 @@ def assign_classrooms():
         try:
             students = [StudentDto.from_dict(student_data) for student_data in data]
         except (ValueError, TypeError) as e:
-            app.logger.error(f"Error converting student data: {str(e)}")
+            app.logger.warning(f"Error converting student data: {str(e)}")
             return jsonify({"error": f"Invalid student data format: {str(e)}"}), 400
+        except InputValidationError as e:
+            app.logger.warning(f"Input validation error: {str(e)}")
+            return jsonify({"error": str(e)}), 400
         
-        df = create_dataframe(students)
-        service = ClassAssignmentService(df)
-        class_assignments = service.assign_classes(classes_number)
+        try:
+            df = create_dataframe(students)
+            service = ClassAssignmentService(df)
+            class_assignments = service.assign_classes(classes_number)
 
-        response = generate_class_summaries(service, class_assignments, students)
-        return jsonify(response)
+            response = generate_class_summaries(service, class_assignments, students)
+            return jsonify(response)
+        except InputValidationError as e:
+            app.logger.warning(f"Input validation error during assignment: {str(e)}")
+            return jsonify({"error": str(e)}), 400
     
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
