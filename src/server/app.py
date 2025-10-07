@@ -50,10 +50,10 @@ def assign_classrooms():
         try:
             students = [StudentDto.from_dict(student_data) for student_data in data]
         except (ValueError, TypeError) as e:
-            app.logger.error(f"Error converting student data: {str(e)}")
+            app.logger.warning(f"Error converting student data: {str(e)}")
             return jsonify({"error": f"Invalid student data format: {str(e)}"}), 400
         except InputValidationError as e:
-            app.logger.error(f"Input validation error: {str(e)}")
+            app.logger.warning(f"Input validation error: {str(e)}")
             return jsonify({"error": str(e)}), 400
         
         try:
@@ -64,7 +64,7 @@ def assign_classrooms():
             response = generate_class_summaries(service, class_assignments, students)
             return jsonify(response)
         except InputValidationError as e:
-            app.logger.error(f"Input validation error during assignment: {str(e)}")
+            app.logger.warning(f"Input validation error during assignment: {str(e)}")
             return jsonify({"error": str(e)}), 400
     
     except Exception as e:

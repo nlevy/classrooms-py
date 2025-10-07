@@ -26,7 +26,7 @@ class ClassAssignmentService:
         try:
             InputValidator.validate_student_data(df)
         except InputValidationError as e:
-            logger.error(f"Input validation failed: {e}")
+            logger.warning(f"Input validation failed: {e}")
             raise
 
         self.df = df
