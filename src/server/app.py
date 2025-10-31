@@ -6,6 +6,7 @@ import logging
 import json
 import os
 from .dto import StudentDto
+from .error_codes import ErrorCode, ErrorResponse
 from src.service.class_assignment_service import ClassAssignmentService
 from src.service.summary_service import generate_class_summaries
 from src.service.validators.input_validator import InputValidationError
@@ -39,23 +40,34 @@ def create_dataframe(students: List[StudentDto]) -> pd.DataFrame:
 def assign_classrooms():
     try:
         if not request.is_json:
-            return jsonify({"error": "Content-Type must be application/json"}), 415
-        
+            return ErrorResponse(
+                code=ErrorCode.INVALID_CONTENT_TYPE,
+                message="Content-Type must be application/json"
+            ).to_tuple(415)
+
         data = request.json
         classes_number = request.args.get('classesNumber', type=int)
-        
+
         if not classes_number:
-            return jsonify({"error": "classesNumber query parameter is required"}), 400
-        
+            return ErrorResponse(
+                code=ErrorCode.MISSING_PARAMETER,
+                params={"parameter": "classesNumber"},
+                message="classesNumber query parameter is required"
+            ).to_tuple(400)
+
         try:
             students = [StudentDto.from_dict(student_data) for student_data in data]
         except (ValueError, TypeError) as e:
             app.logger.warning(f"Error converting student data: {str(e)}")
-            return jsonify({"error": f"Invalid student data format: {str(e)}"}), 400
+            return ErrorResponse(
+                code=ErrorCode.INVALID_STUDENT_DATA,
+                params={"details": str(e)},
+                message=f"Invalid student data format: {str(e)}"
+            ).to_tuple(400)
         except InputValidationError as e:
             app.logger.warning(f"Input validation error: {str(e)}")
-            return jsonify({"error": str(e)}), 400
-        
+            return e.to_response().to_tuple(400)
+
         try:
             df = create_dataframe(students)
             service = ClassAssignmentService(df)
@@ -65,11 +77,15 @@ def assign_classrooms():
             return jsonify(response)
         except InputValidationError as e:
             app.logger.warning(f"Input validation error during assignment: {str(e)}")
-            return jsonify({"error": str(e)}), 400
-    
+            return e.to_response().to_tuple(400)
+
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
+        return ErrorResponse(
+            code=ErrorCode.INTERNAL_SERVER_ERROR,
+            params={"details": str(e)},
+            message=str(e)
+        ).to_tuple(500)
 
 @app.route('/template', methods=['GET'])
 def get_template():
@@ -81,10 +97,17 @@ def get_template():
             template = json.load(f)
             return jsonify(template), 200, {'Content-Type': 'application/json'}
     except FileNotFoundError:
-        return jsonify({"error": f"Unsupported Language: {language}"}), 500
+        return ErrorResponse(
+            code=ErrorCode.UNSUPPORTED_LANGUAGE,
+            params={"language": language},
+            message=f"Unsupported language: {language}"
+        ).to_tuple(404)
     except Exception as e:
         logging.error(f"Failed to load template: {str(e)}")
-        return jsonify({"error": "Template not available"}), 500
+        return ErrorResponse(
+            code=ErrorCode.TEMPLATE_NOT_AVAILABLE,
+            message="Template not available"
+        ).to_tuple(500)
 
 
 if __name__ == '__main__':

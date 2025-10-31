@@ -1,0 +1,21 @@
+{
+  "INVALID_CONTENT_TYPE": "Invalid content type. Please send JSON data.",
+  "MISSING_PARAMETER": "Required parameter '{parameter}' is missing.",
+  "INVALID_STUDENT_DATA": "Invalid student data: {details}",
+  "EMPTY_STUDENT_DATA": "Student data is empty. Please provide at least one student.",
+  "MISSING_REQUIRED_FIELDS": "Missing required fields: {fields}. Please ensure all required information is provided.",
+  "DUPLICATE_STUDENT_NAMES": "Duplicate student names found: {duplicates}. Each student name must be unique.",
+  "STUDENT_NO_FRIENDS": "Student '{studentName}' has no friends listed. All students must have at least one friend to enable optimal class assignments.",
+  "UNKNOWN_FRIEND": "Student '{studentName}' lists unknown friend '{friendName}'. All friends must exist in the student list.",
+  "ISOLATED_STUDENTS": "Students with no valid friendships: {students}. This may be due to one-way friendships. Please ensure friendships are mutual.",
+  "INVALID_CLASS_COUNT": "Number of classes must be positive. Please provide a valid number of classes.",
+  "INVALID_STUDENT_COUNT": "Number of students must be positive.",
+  "TOO_MANY_CLASSES": "Cannot create {classCount} classes with only {studentCount} students. Please reduce the number of classes or add more students.",
+  "CLASS_SIZE_TOO_SMALL": "Class size would be too small ({minSize} students per class). Please reduce the number of classes from {classCount} or add more students.",
+  "ASSIGNMENT_FAILED": "Failed to assign students to classes. Please try again or contact support.",
+  "NO_SOLUTION_FOUND": "No valid assignment solution found. Please review student constraints and try again.",
+  "OPTIMIZATION_TIMEOUT": "Assignment optimization timed out. Try using fewer students, more classes, or simplifying constraints.",
+  "UNSUPPORTED_LANGUAGE": "Language '{language}' is not supported. Available languages: English (en), Hebrew (he).",
+  "TEMPLATE_NOT_AVAILABLE": "Data template is not available. Please try again later.",
+  "INTERNAL_SERVER_ERROR": "An unexpected error occurred. Please try again or contact support if the problem persists."
+}

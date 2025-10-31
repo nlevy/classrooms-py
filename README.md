@@ -20,11 +20,12 @@ An intelligent classroom assignment service that optimally assigns students to c
 - **Cluster Groupings**: Supports predefined student groups
 
 ### 🛠️ Technical Features
-- **REST API**: Production-ready endpoints with comprehensive error handling
+- **REST API**: Production-ready endpoints with structured error responses
+- **Multilingual Error Handling**: Error codes with client-side translation support
 - **CLI Tools**: Command-line interface for testing and analysis
-- **Input Validation**: Comprehensive data validation with clear error messages
+- **Input Validation**: Comprehensive data validation with 18+ specific error codes
 - **Quality Assurance**: Real-time solution evaluation and constraint checking
-- **Multi-language Support**: Template data in multiple languages
+- **Multi-language Support**: Template data and error messages in multiple languages
 
 ### 🔧 Algorithm Options
 
@@ -110,6 +111,83 @@ curl http://localhost:5000/template
 curl http://localhost:5000/template?lang=he
 ```
 
+## Error Handling
+
+The API returns structured error responses with error codes for multilingual client support.
+
+### Error Response Format
+
+All errors return a structured JSON response:
+
+```json
+{
+  "error": {
+    "code": "STUDENT_NO_FRIENDS",
+    "params": {
+      "studentName": "Alice"
+    },
+    "message": "Student 'Alice' has no friends listed"
+  }
+}
+```
+
+- **`code`**: Error identifier for client-side translation (e.g., `STUDENT_NO_FRIENDS`)
+- **`params`**: Dynamic parameters to substitute in translated messages
+- **`message`**: English debug message for logging/debugging
+
+### Client-Side Translation
+
+Clients can translate errors to any language using the error code and parameters:
+
+```typescript
+// English
+"Student '{studentName}' has no friends listed. All students must have at least one friend."
+
+// Hebrew
+"לתלמיד '{studentName}' אין חברים רשומים. כל תלמיד חייב לרשום לפחות חבר אחד."
+```
+
+**See [`client_examples/`](client_examples/)** for complete integration examples including:
+- Translation files for English and Hebrew
+- TypeScript/JavaScript implementation
+- React component examples
+- Integration guides for various frameworks
+
+### Common Error Codes
+
+| Error Code | Description | Parameters |
+|------------|-------------|------------|
+| `EMPTY_STUDENT_DATA` | No students provided | `count` |
+| `STUDENT_NO_FRIENDS` | Student has no friends listed | `studentName` |
+| `UNKNOWN_FRIEND` | Friend not in student list | `studentName`, `friendName` |
+| `DUPLICATE_STUDENT_NAMES` | Duplicate names found | `duplicates` (array) |
+| `TOO_MANY_CLASSES` | More classes than students | `classCount`, `studentCount` |
+| `INVALID_CLASS_COUNT` | Invalid number of classes | `classCount` |
+| `MISSING_PARAMETER` | Required parameter missing | `parameter` |
+
+**Complete list**: See [`client_examples/README.md`](client_examples/README.md) for all 18 error codes.
+
+### Example Error Handling
+
+```bash
+# Request with invalid data
+curl -X POST "http://localhost:5000/classrooms?classesNumber=10" \
+  -H "Content-Type: application/json" \
+  -d '[{"name": "Alice", "gender": "FEMALE"}]'
+
+# Response (400 Bad Request)
+{
+  "error": {
+    "code": "TOO_MANY_CLASSES",
+    "params": {
+      "classCount": 10,
+      "studentCount": 1
+    },
+    "message": "Cannot create 10 classes with only 1 students"
+  }
+}
+```
+
 ## Configuration
 
 ### Environment Variables
@@ -193,6 +271,8 @@ if info['metadata'].get('fallback_used'):
 
 - **[Environment Configuration Guide](ENVIRONMENT_CONFIG.md)** - Detailed configuration options
 - **[Project Summary](PROJECT_SUMMARY.md)** - Complete technical overview
+- **[Error Handling Guide](client_examples/README.md)** - Client-side error translation examples
+- **[Error Handling Implementation](ERROR_HANDLING_IMPLEMENTATION_SUMMARY.md)** - Technical implementation details
 
 ## Production Deployment
 
