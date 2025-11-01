@@ -5,4 +5,11 @@ flask>=2.0.0
 flask-cors>=4.0.0
 gunicorn>=21.2.0
 numpy>=1.21.0
-ortools>=9.5.0 
+ortools>=9.5.0
+
+# Testing dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+pytest-flask>=1.2.0
+pytest-timeout>=2.1.0 

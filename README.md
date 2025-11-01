@@ -217,6 +217,43 @@ python src/cli/assign_classes.py -csv students.csv -classes 3
 python src/cli/example_usage.py
 ```
 
+## Testing
+### Run All Tests
+
+```bash
+# Run all tests (unit + integration + API)
+python -m pytest tests/ -v
+
+# Run only unit tests
+python -m pytest tests/unit/ -v
+
+# Run only integration tests
+python -m pytest tests/integration/ -v
+
+# Run only API tests
+python -m pytest tests/api/ -v
+
+# Run with coverage report
+python -m pytest tests/ --cov=src --cov-report=html
+```
+
+### Run Specific Test Files
+
+```bash
+# Unit tests
+python -m pytest tests/unit/validators/test_input_validator.py -v
+python -m pytest tests/unit/strategies/test_greedy_strategy.py -v
+python -m pytest tests/unit/strategies/test_cp_sat_strategy.py -v
+
+# Integration tests
+python -m pytest tests/integration/test_assignment_service.py -v
+python -m pytest tests/integration/test_strategy_fallback.py -v
+
+# API tests
+python -m pytest tests/api/test_classrooms_endpoint.py -v
+python -m pytest tests/api/test_template_endpoint.py -v
+```
+
 ## Dependencies
 
 ### Core Requirements
