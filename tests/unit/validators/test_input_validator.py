@@ -31,6 +31,7 @@ class TestInputValidator(unittest.TestCase):
     def test_validate_duplicate_student_names(self):
         df = pd.DataFrame({
             'name': ['Alice', 'Bob', 'Alice'],
+            'school': ['School A', 'School A', 'School A'],
             'gender': ['FEMALE', 'MALE', 'FEMALE'],
             'academicPerformance': ['HIGH', 'MEDIUM', 'LOW'],
             'behavioralPerformance': ['HIGH', 'MEDIUM', 'LOW'],
@@ -45,6 +46,21 @@ class TestInputValidator(unittest.TestCase):
 
         self.assertEqual(context.exception.code, ErrorCode.DUPLICATE_STUDENT_NAMES)
         self.assertIn('Alice', context.exception.params['duplicates'])
+
+    def test_same_name_different_school_is_allowed(self):
+        df = pd.DataFrame({
+            'name': ['Alice', 'Bob', 'Alice'],
+            'school': ['School A', 'School A', 'School B'],
+            'gender': ['FEMALE', 'MALE', 'FEMALE'],
+            'academicPerformance': ['HIGH', 'MEDIUM', 'LOW'],
+            'behavioralPerformance': ['HIGH', 'MEDIUM', 'LOW'],
+            'friend1': ['Bob', 'Alice', 'Bob'],
+            'friend2': ['', '', ''],
+            'friend3': ['', '', ''],
+            'friend4': ['', '', '']
+        })
+
+        InputValidator.validate_student_data(df)
 
     def test_validate_valid_student_data(self):
         df = pd.DataFrame({

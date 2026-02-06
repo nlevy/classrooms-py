@@ -61,13 +61,15 @@ class InputValidator:
                 message=f"Missing required columns: {missing_columns}"
             )
 
-        # Check for duplicate student names
-        duplicate_names = df[df.duplicated(subset=['name'], keep=False)]['name'].tolist()
-        if duplicate_names:
+        # Check for duplicate students (same name + school)
+        duplicate_subset = ['name', 'school'] if 'school' in df.columns else ['name']
+        duplicate_mask = df.duplicated(subset=duplicate_subset, keep=False)
+        if duplicate_mask.any():
+            duplicate_names = df[duplicate_mask]['name'].tolist()
             raise InputValidationError(
                 code=ErrorCode.DUPLICATE_STUDENT_NAMES,
                 params={"duplicates": duplicate_names},
-                message=f"Duplicate student names found: {duplicate_names}"
+                message=f"Duplicate students found: {duplicate_names}"
             )
 
         # Validate friendship data and find isolated students
